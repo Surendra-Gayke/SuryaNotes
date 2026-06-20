@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@color/card_bg"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Accent stripe on the left -->
+        <View
+            android:id="@+id/accentStripe"
+            android:layout_width="5dp"
+            android:layout_height="match_parent"
+            android:background="@color/note_accent_1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/noteTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="@font/segoeui_bold"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <!-- Content Preview -->
+            <TextView
+                android:id="@+id/noteContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:fontFamily="@font/segoeui"
+                android:maxLines="3"
+                android:ellipsize="end"
+                android:layout_marginTop="6dp" />
+
+            <!-- Bottom row: date + icons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/noteDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="11sp"
+                    android:textColor="@color/text_hint"
+                    android:fontFamily="@font/segoeui" />
+
+                <!-- Bold indicator -->
+                <TextView
+                    android:id="@+id/boldIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="B"
+                    android:textStyle="bold"
+                    android:textSize="11sp"
+                    android:textColor="@color/primary"
+                    android:visibility="gone"
+                    android:layout_marginEnd="4dp" />
+
+                <!-- Italic indicator -->
+                <TextView
+                    android:id="@+id/italicIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="I"
+                    android:textStyle="italic"
+                    android:textSize="11sp"
+                    android:textColor="@color/primary"
+                    android:visibility="gone"
+                    android:layout_marginEnd="4dp" />
+
+                <!-- Background icon -->
+                <ImageView
+                    android:id="@+id/hasBackgroundIcon"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@android:drawable/ic_menu_gallery"
+                    android:alpha="0.5"
+                    android:visibility="gone"
+                    android:contentDescription="Has background" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

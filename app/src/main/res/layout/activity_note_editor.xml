@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/surface">
+
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary"
+        android:elevation="4dp"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:titleTextColor="@color/white"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Formatting Toolbar -->
+    <LinearLayout
+        android:id="@+id/formattingBar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="12dp"
+        android:background="@color/light_gray"
+        android:elevation="2dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <!-- Bold Button -->
+        <ToggleButton
+            android:id="@+id/btnBold"
+            style="@style/FormatToggleButton"
+            android:textOn="B"
+            android:textOff="B"
+            android:textStyle="bold"
+            android:textColor="@color/format_inactive"
+            android:layout_marginEnd="6dp" />
+
+        <!-- Italic Button -->
+        <ToggleButton
+            android:id="@+id/btnItalic"
+            style="@style/FormatToggleButton"
+            android:textOn="I"
+            android:textOff="I"
+            android:textStyle="italic"
+            android:textColor="@color/format_inactive"
+            android:layout_marginEnd="6dp" />
+
+        <!-- Divider -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="28dp"
+            android:background="@color/medium_gray"
+            android:layout_marginHorizontal="8dp" />
+
+        <!-- Background Image Button -->
+        <ImageButton
+            android:id="@+id/btnBackgroundImage"
+            android:layout_width="44dp"
+            android:layout_height="36dp"
+            android:src="@android:drawable/ic_menu_gallery"
+            android:background="@drawable/format_button_bg"
+            android:contentDescription="@string/add_background"
+            android:scaleType="centerInside"
+            android:padding="6dp"
+            android:layout_marginEnd="6dp" />
+
+        <!-- Remove Background -->
+        <ImageButton
+            android:id="@+id/btnRemoveBackground"
+            android:layout_width="44dp"
+            android:layout_height="36dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:background="@drawable/format_button_bg"
+            android:contentDescription="@string/remove_background"
+            android:scaleType="centerInside"
+            android:padding="6dp"
+            android:visibility="gone" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Font label -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Segoe UI"
+            android:fontFamily="sec"
+            android:textSize="11sp"
+            android:textColor="@color/text_hint"
+            android:alpha="0.7" />
+
+    </LinearLayout>
+
+    <!-- Transparency Controls -->
+    <LinearLayout
+        android:id="@+id/transparencyLayout"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:background="@color/light_gray"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/formattingBar">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/background_transparency"
+            android:textSize="13sp"
+            android:fontFamily="@font/segoeui"
+            android:textColor="@color/dark_gray" />
+
+        <SeekBar
+            android:id="@+id/transparencySeekBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="255"
+            android:progress="180"
+            android:layout_marginHorizontal="8dp"
+            android:progressTint="@color/primary"
+            android:thumbTint="@color/primary" />
+
+        <TextView
+            android:id="@+id/transparencyValue"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:text="70%"
+            android:textSize="12sp"
+            android:fontFamily="@font/segoeui_bold"
+            android:textColor="@color/primary"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <!-- Guideline that shifts based on transparency bar visibility -->
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/editorBarrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="formattingBar,transparencyLayout" />
+
+    <!-- Editor Area -->
+    <FrameLayout
+        android:id="@+id/editorContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/editorBarrier"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Background Image -->
+        <ImageView
+            android:id="@+id/backgroundImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            android:contentDescription="Background" />
+
+        <!-- Semi-transparent overlay for readability -->
+        <View
+            android:id="@+id/backgroundOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/overlay_white"
+            android:visibility="gone" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:overScrollMode="never">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Title -->
+                <EditText
+                    android:id="@+id/editTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/title_hint"
+                    android:textSize="24sp"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_hint"
+                    android:fontFamily="@font/segoeui_bold"
+                    android:background="@null"
+                    android:inputType="textCapSentences"
+                    android:maxLines="3"
+                    android:paddingBottom="12dp"
+                    android:importantForAutofill="no" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/divider"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Content -->
+                <EditText
+                    android:id="@+id/editContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/content_hint"
+                    android:textSize="16sp"
+                    android:textColor="@color/dark_gray"
+                    android:textColorHint="@color/text_hint"
+                    android:fontFamily="@font/segoeui"
+                    android:background="@null"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:gravity="top"
+                    android:minLines="20"
+                    android:lineSpacingExtra="6dp"
+                    android:importantForAutofill="no" />
+
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
