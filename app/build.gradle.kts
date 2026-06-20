@@ -1,7 +1,19 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     id("org.jetbrains.kotlin.android")
 }
+val versionProperties = Properties()
+val versionPropertiesFile = rootProject.file("version.properties")
+
+versionProperties.load(versionPropertiesFile.inputStream())
+
+val versionCodeValue =
+    versionProperties["VERSION_CODE"].toString().toInt()
+
+val versionNameValue =
+    versionProperties["VERSION_NAME"].toString()
 
 android {
     namespace = "com.surendra.suryanotes"
@@ -11,8 +23,13 @@ android {
         applicationId = "com.surendra.suryanotes"
         minSdk = 32
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = versionCodeValue
+        versionName = versionNameValue
+
+        setProperty(
+            "archivesBaseName",
+            "NoteCraft-v$versionNameValue"
+        )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
