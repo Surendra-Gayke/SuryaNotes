@@ -32,7 +32,7 @@ A simple and efficient Android Notes application built using modern Android deve
 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/notes-app.git
+git clone https://github.com/Surendra-Gayke/SuryaNotes.git
 ```
 
 2. Open the project in Android Studio
@@ -56,6 +56,8 @@ The app uses Room Database for local data persistence.
 - Export notes as PDF
 
 ## 🧪 Testing
+
+- Testcases are in progress
 
 Run unit tests:
 
