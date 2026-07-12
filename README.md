@@ -15,9 +15,9 @@ A simple and efficient Android Notes application built using modern Android deve
 
 ## 📱 Screenshots
 
-| Home Screen | Add Note | Edit Note |
-|------------|-----------|-----------|
-| Add screenshot here | Add screenshot here | Add screenshot here |
+| Home Screen                                                          | Add Note                                                            | Edit Note                                                 |
+|----------------------------------------------------------------------|---------------------------------------------------------------------|-----------------------------------------------------------|
+| ![Home Screen](screenshots/Screenshot_20260712_194652_NoteCraft.jpg) | ![Note Entry](screenshots/Screenshot_20260712_194700_NoteCraft.jpg) | ![](screenshots/Screenshot_20260712_194700_NoteCraft.jpg) |
 
 ## 🚀 Getting Started
 
