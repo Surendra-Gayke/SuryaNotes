@@ -2,11 +2,14 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
+
 val versionProperties = Properties()
 val versionPropertiesFile = rootProject.file("version.properties")
-
 versionProperties.load(versionPropertiesFile.inputStream())
 
 val versionCodeValue =
@@ -16,58 +19,147 @@ val versionNameValue =
     versionProperties["VERSION_NAME"].toString()
 
 android {
+
     namespace = "com.surendra.suryanotes"
-    compileSdk = 34
+
+    compileSdk = 36
 
     defaultConfig {
+
         applicationId = "com.surendra.suryanotes"
+
         minSdk = 32
-        targetSdk = 34
+
+        targetSdk = 36
+
         versionCode = versionCodeValue
+
         versionName = versionNameValue
 
-        setProperty(
-            "archivesBaseName",
-            "NoteCraft-v$versionNameValue"
-        )
+        testInstrumentationRunner =
+            "androidx.test.runner.AndroidJUnitRunner"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+    }
+
+    signingConfigs {
+
+        // ==========================================
+        // PASTE YOUR EXISTING SIGNING CONFIG HERE
+        // DO NOT MODIFY IT
+        // ==========================================
+
     }
 
     buildTypes {
+
+        debug {
+
+            applicationIdSuffix = ".debug"
+
+            versionNameSuffix = "-debug"
+        }
+
         release {
+
             isMinifyEnabled = false
+
+            isShrinkResources = false
+
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
+                getDefaultProguardFile(
+                    "proguard-android-optimize.txt"
+                ),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
     buildFeatures {
-        viewBinding = true
+
+        compose = true
+
+        buildConfig = true
     }
 
-}
-kotlin {
-    jvmToolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+    packaging {
+
+        resources {
+
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    compileOptions {
+
+        sourceCompatibility = JavaVersion.VERSION_17
+
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+
+        jvmTarget = "17"
+
+        freeCompilerArgs += listOf(
+            "-Xjvm-default=all"
+        )
+    }
+
+    lint {
+
+        abortOnError = false
+
+        checkReleaseBuilds = true
     }
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.11.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.recyclerview:recyclerview:1.3.2")
-    implementation("androidx.cardview:cardview:1.0.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
-    implementation("androidx.activity:activity-ktx:1.8.2")
 
-    // Gson for JSON serialization
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation(platform(libs.compose.bom))
 
-    // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    androidTestImplementation(platform(libs.compose.bom))
+
+    implementation(libs.androidx.core.ktx)
+
+    implementation(libs.androidx.activity.compose)
+
+    implementation(libs.compose.ui)
+
+    implementation(libs.compose.ui.preview)
+
+    debugImplementation(libs.compose.ui.tooling)
+
+    implementation(libs.compose.material3)
+
+    implementation(libs.compose.navigation)
+
+    implementation(libs.lifecycle.runtime)
+
+    implementation(libs.lifecycle.viewmodel)
+
+    implementation(libs.coroutines)
+
+    implementation(libs.koin.android)
+
+    implementation(libs.koin.compose)
+
+    implementation(libs.room.runtime)
+
+    implementation(libs.room.ktx)
+
+    ksp(libs.room.compiler)
+
+    implementation(libs.coil.compose)
+
+    implementation(libs.androidx.datastore)
+
+    implementation(libs.kotlinx.serialization)
+
+    implementation(libs.adaptive)
+
+    implementation(libs.material)
 }

@@ -1,7 +1,6 @@
 package com.surendra.suryanotes
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
@@ -28,7 +27,8 @@ object PdfExporter {
         return try {
             val document = PdfDocument()
             var pageNumber = 1
-            var pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, pageNumber).create()
+            var pageInfo =
+                PdfDocument.PageInfo.Builder(PAGE_WIDTH, PAGE_HEIGHT, pageNumber).create()
             var page = document.startPage(pageInfo)
             var canvas = page.canvas
             var yPosition = MARGIN
@@ -71,10 +71,13 @@ object PdfExporter {
                 typeface = when {
                     note.isBold && note.isItalic -> fontBoldItalic
                         ?: Typeface.create(Typeface.DEFAULT, Typeface.BOLD_ITALIC)
+
                     note.isBold -> fontBold
                         ?: Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+
                     note.isItalic -> fontItalic
                         ?: Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
+
                     else -> fontRegular ?: Typeface.DEFAULT
                 }
             }
