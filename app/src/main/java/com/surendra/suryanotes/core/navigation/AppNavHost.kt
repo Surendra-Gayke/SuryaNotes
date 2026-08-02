@@ -5,7 +5,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.surendra.suryanotes.ui.screen.HomeScreen
+import com.surendra.suryanotes.ui.editor.EditorScreen
+import com.surendra.suryanotes.ui.home.HomeScreen
 
 @Composable
 fun AppNavHost() {
@@ -19,9 +20,28 @@ fun AppNavHost() {
 
         composable<Home> {
 
-            val route = it.toRoute<Home>()
+            HomeScreen(
 
-            HomeScreen()
+                onNavigateToEditor = { noteId ->
+
+                    navController.navigate(
+                        Editor(noteId)
+                    )
+
+                }
+
+            )
+
+        }
+
+        composable<Editor> {
+
+            val route = it.toRoute<Editor>()
+
+            // route is intentionally unused for now.
+            // M1.4.1 will pass route.noteId to EditorViewModel
+            // through SavedStateHandle.
+            EditorScreen()
 
         }
 

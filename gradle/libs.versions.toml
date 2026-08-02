@@ -36,6 +36,7 @@ androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx"
 
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 
+androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-extended" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 
 compose-ui = { module = "androidx.compose.ui:ui" }

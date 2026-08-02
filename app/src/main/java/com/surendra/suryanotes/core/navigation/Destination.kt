@@ -1,7 +1,11 @@
 package com.surendra.suryanotes.core.navigation
 
-sealed interface Destination {
+import kotlinx.serialization.Serializable
 
-    data object Home : Destination
+@Serializable
+data object Home
 
-}
+@Serializable
+data class Editor(
+    val noteId: Long? = null
+)

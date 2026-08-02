@@ -162,4 +162,6 @@ dependencies {
     implementation(libs.adaptive)
 
     implementation(libs.material)
+
+    implementation(libs.androidx.compose.material.icons)
 }
