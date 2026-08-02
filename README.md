@@ -11,7 +11,6 @@ A simple and efficient Android Notes application built using modern Android deve
 - Search notes quickly
 - Persistent local storage
 - Material Design UI
-- Dark Mode support (if applicable)
 
 ## 📱 Screenshots
 
