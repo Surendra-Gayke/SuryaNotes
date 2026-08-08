@@ -2,8 +2,11 @@ package com.surendra.suryanotes.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.StickyNote2
 import androidx.compose.material.icons.outlined.StickyNote2
@@ -34,21 +37,23 @@ fun EmptyState(
         Icon(
             imageVector = Icons.AutoMirrored.Outlined.StickyNote2,
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(64.dp)
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = title,
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center
+            style = MaterialTheme.typography.headlineSmall
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = description,
             style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-
     }
-
 }

@@ -8,14 +8,9 @@ package com.surendra.suryanotes.ui.home
  */
 sealed interface HomeEffect {
 
-    /**
-     * Navigate to the Editor screen.
-     *
-     * null  -> Create new note
-     * noteId -> Edit existing note
-     */
     data class NavigateToEditor(
         val noteId: Long? = null
     ) : HomeEffect
 
+    data object ShowUndoSnackbar : HomeEffect
 }

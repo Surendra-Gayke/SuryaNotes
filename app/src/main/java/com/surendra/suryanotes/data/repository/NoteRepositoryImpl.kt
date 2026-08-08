@@ -40,8 +40,8 @@ class NoteRepositoryImpl(
 
     override suspend fun createNote(
         note: Note
-    ) {
-        noteDao.insert(
+    ): Long {
+        return noteDao.insert(
             note.toEntity()
         )
     }

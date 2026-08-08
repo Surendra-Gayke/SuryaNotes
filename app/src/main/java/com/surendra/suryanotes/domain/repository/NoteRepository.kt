@@ -29,23 +29,14 @@ interface NoteRepository {
         id: Long
     ): Note?
 
-    /**
-     * Create a new note.
-     */
     suspend fun createNote(
         note: Note
-    )
+    ): Long
 
-    /**
-     * Update an existing note.
-     */
     suspend fun updateNote(
         note: Note
     )
 
-    /**
-     * Delete a note.
-     */
     suspend fun deleteNote(
         id: Long
     )

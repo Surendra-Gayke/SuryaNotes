@@ -26,9 +26,10 @@ val appModule = module {
     }
 
     viewModel {
-
-        EditorViewModel()
-
+        EditorViewModel(
+            noteRepository = get(),
+            savedStateHandle = get()
+        )
     }
 
 }

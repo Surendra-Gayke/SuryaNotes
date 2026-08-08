@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.surendra.suryanotes.data.local.note.NoteEntity
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -46,12 +47,8 @@ interface NoteDao {
     /**
      * Insert a new note.
      */
-    @Insert(
-        onConflict = OnConflictStrategy.REPLACE
-    )
-    suspend fun insert(
-        note: NoteEntity
-    )
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(note: NoteEntity): Long
 
     /**
      * Update an existing note.

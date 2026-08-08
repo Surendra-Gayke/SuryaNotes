@@ -1,5 +1,7 @@
 package com.surendra.suryanotes.ui.editor
 
+import com.surendra.suryanotes.domain.model.Note
+
 /**
  * Immutable UI state for the Editor screen.
  *
@@ -7,11 +9,8 @@ package com.surendra.suryanotes.ui.editor
  * are implemented.
  */
 data class EditorUiState(
-
-    /**
-     * Indicates whether the editor is currently loading
-     * an existing note.
-     */
+    val noteId: Long? = null,
+    val title: String = "",
+    val content: String = "",
     val isLoading: Boolean = false
-
 )

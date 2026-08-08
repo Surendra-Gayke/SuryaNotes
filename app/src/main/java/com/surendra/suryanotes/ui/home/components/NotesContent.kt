@@ -14,12 +14,15 @@ import com.surendra.suryanotes.domain.model.Note
 fun NotesContent(
     notes: List<Note>,
     onNoteClick: (Note) -> Unit,
+    onNoteLongClick: (Note) -> Unit,
+    paddingValues: PaddingValues,
     modifier: Modifier = Modifier
 ) {
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = paddingValues,
+
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 
@@ -30,11 +33,9 @@ fun NotesContent(
 
             NoteCard(
                 note = note,
-                onClick = onNoteClick
+                onClick = onNoteClick,
+                onLongClick = onNoteLongClick
             )
-
         }
-
     }
-
 }
