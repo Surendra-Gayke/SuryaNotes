@@ -1,5 +1,7 @@
 package com.surendra.suryanotes.ui.editor
 
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -50,9 +52,19 @@ class EditorViewModel(
             val note = noteRepository.getNoteById(noteId)
 
             _uiState.update {
+
+                val titleText = note?.title.orEmpty()
+                val contentText = note?.content.orEmpty()
+
                 it.copy(
-                    title = note?.title.orEmpty(),
-                    content = note?.content.orEmpty(),
+                    title = TextFieldValue(
+                        text = titleText,
+                        selection = TextRange(titleText.length)
+                    ),
+                    content = TextFieldValue(
+                        text = contentText,
+                        selection = TextRange(contentText.length)
+                    ),
                     isLoading = false
                 )
             }
@@ -62,15 +74,15 @@ class EditorViewModel(
     // ----------------------------
     // UI Actions
     // ----------------------------
-    fun onTitleChange(newTitle: String) {
+    fun onTitleChange(value: TextFieldValue) {
         _uiState.update {
-            it.copy(title = newTitle)
+            it.copy(title = value)
         }
     }
 
-    fun onContentChange(newContent: String) {
+    fun onContentChange(value: TextFieldValue) {
         _uiState.update {
-            it.copy(content = newContent)
+            it.copy(content = value)
         }
     }
 
@@ -82,12 +94,12 @@ class EditorViewModel(
         viewModelScope.launch {
 
             _uiState
-                .debounce(500) // wait for typing pause
+                .debounce(500)
                 .filter { state ->
                     !state.isLoading
                 }
                 .distinctUntilChangedBy {
-                    it.title to it.content
+                    it.title.text to it.content.text
                 }
                 .collect { state ->
                     saveNote(state)
@@ -97,7 +109,10 @@ class EditorViewModel(
 
     private suspend fun saveNote(state: EditorUiState) {
 
-        if (state.title.isBlank() && state.content.isBlank()) {
+        val title = state.title.text
+        val content = state.content.text
+
+        if (title.isBlank() && content.isBlank()) {
             return
         }
 
@@ -108,15 +123,17 @@ class EditorViewModel(
 
         val note = Note(
             id = state.noteId ?: 0L,
-            title = state.title,
-            content = state.content,
+            title = title,
+            content = content,
             createdAt = existingNote?.createdAt ?: currentTime,
             updatedAt = currentTime,
             isPinned = existingNote?.isPinned ?: false
         )
 
         if (state.noteId == null) {
+
             val newId = noteRepository.createNote(note)
+
             _uiState.update {
                 it.copy(noteId = newId)
             }

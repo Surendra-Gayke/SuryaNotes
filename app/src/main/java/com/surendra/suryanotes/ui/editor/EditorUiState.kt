@@ -1,5 +1,6 @@
 package com.surendra.suryanotes.ui.editor
 
+import androidx.compose.ui.text.input.TextFieldValue
 import com.surendra.suryanotes.domain.model.Note
 
 /**
@@ -10,7 +11,7 @@ import com.surendra.suryanotes.domain.model.Note
  */
 data class EditorUiState(
     val noteId: Long? = null,
-    val title: String = "",
-    val content: String = "",
+    val title: TextFieldValue = TextFieldValue(""),
+    val content: TextFieldValue = TextFieldValue(""),
     val isLoading: Boolean = false
 )
