@@ -14,5 +14,18 @@ sealed interface HomeEvent {
         val note: Note
     ) : HomeEvent
 
+    data class SearchQueryChanged(
+        val query: String
+    ) : HomeEvent
+
     data object UndoDelete : HomeEvent
+    object ConfirmDelete : HomeEvent
+    object DismissDeleteDialog : HomeEvent
+    data class TogglePin(val note: Note) : HomeEvent
+    data class NoteLongPressed(val note: Note) : HomeEvent
+    object DismissActionDialog : HomeEvent
+
+    object ToggleSearch : HomeEvent
+    object ClearSearch : HomeEvent
+
 }

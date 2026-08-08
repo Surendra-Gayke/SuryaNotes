@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.surendra.suryanotes.domain.model.Note
 import com.surendra.suryanotes.domain.repository.NoteRepository
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -27,20 +28,26 @@ class HomeViewModel(
         )
     )
 
+    private var recentlyDeletedNote: Note? = null
+
+    private val searchQueryFlow = MutableStateFlow("")
+
     val uiState: StateFlow<HomeUiState> =
         _uiState.asStateFlow()
 
-    private val effectChannel = Channel<HomeEffect>()
+    private val effectChannel =
+        Channel<HomeEffect>()
 
-    val effect = effectChannel.receiveAsFlow()
-
-    private var recentlyDeletedNote: Note? = null
+    val effect =
+        effectChannel.receiveAsFlow()
 
     init {
         observeNotes()
     }
 
-    fun onEvent(event: HomeEvent) {
+    fun onEvent(
+        event: HomeEvent
+    ) {
         when (event) {
 
             HomeEvent.AddNoteClicked -> {
@@ -52,59 +59,174 @@ class HomeViewModel(
             }
 
             is HomeEvent.DeleteNoteClicked -> {
-                deleteNote(event.note)
+                _uiState.update { current ->
+                    current.copy(
+                        noteToDelete = event.note
+                    )
+                }
+            }
+
+            is HomeEvent.SearchQueryChanged -> {
+                searchQueryFlow.value = event.query
+
+                _uiState.update { current ->
+                    current.copy(searchQuery = event.query)
+                }
+            }
+
+            is HomeEvent.TogglePin -> {
+                togglePin(event.note)
+            }
+
+            is HomeEvent.NoteLongPressed -> {
+                _uiState.update {
+                    it.copy(selectedNote = event.note)
+                }
+            }
+
+            HomeEvent.ConfirmDelete -> {
+                deleteSelectedNote()
+            }
+
+            HomeEvent.DismissDeleteDialog -> {
+                clearDeleteState()
             }
 
             HomeEvent.UndoDelete -> {
                 restoreDeletedNote()
             }
+
+            HomeEvent.DismissActionDialog -> {
+                _uiState.update {
+                    it.copy(selectedNote = null)
+                }
+            }
+
+            HomeEvent.ToggleSearch -> {
+                _uiState.update {
+                    it.copy(
+                        isSearchActive = !it.isSearchActive
+                    )
+                }
+            }
+
+            HomeEvent.ClearSearch -> {
+                searchQueryFlow.value = ""
+
+                _uiState.update {
+                    it.copy(
+                        searchQuery = "",
+                        isSearchActive = false
+                    )
+                }
+            }
         }
     }
 
-    private fun navigateToEditor(noteId: Long?) {
-        viewModelScope.launch {
-            effectChannel.send(
-                HomeEffect.NavigateToEditor(noteId)
-            )
-        }
-    }
+    private fun deleteSelectedNote() {
 
-    private fun deleteNote(note: Note) {
+        val note = _uiState.value.noteToDelete
+            ?: return
+
         viewModelScope.launch {
 
             recentlyDeletedNote = note
 
             noteRepository.deleteNote(note.id)
 
-            effectChannel.send(HomeEffect.ShowUndoSnackbar)
+            _uiState.update { current ->
+                current.copy(
+                    noteToDelete = null
+                )
+            }
+
+            effectChannel.send(
+                HomeEffect.ShowUndoSnackbar
+            )
         }
     }
 
     private fun restoreDeletedNote() {
+
+        val note = recentlyDeletedNote
+            ?: return
+
         viewModelScope.launch {
 
-            recentlyDeletedNote?.let { note ->
-                noteRepository.createNote(note)
-                recentlyDeletedNote = null
-            }
+            noteRepository.createNote(note)
+
+            recentlyDeletedNote = null
         }
     }
 
-    private fun observeNotes() {
+    private fun clearDeleteState() {
+        _uiState.update { current ->
+            current.copy(
+                noteToDelete = null
+            )
+        }
+    }
+
+    private fun togglePin(note: Note) {
         viewModelScope.launch {
 
-            noteRepository
-                .observeNotes()
-                .collect { notes ->
+            val updatedNote = note.copy(
+                isPinned = !note.isPinned,
+                updatedAt = System.currentTimeMillis()
+            )
 
-                    _uiState.update { current ->
-                        current.copy(
-                            notes = notes,
-                            isLoading = false,
-                            errorMessage = null
-                        )
+            noteRepository.updateNote(updatedNote)
+        }
+    }
+
+    private fun navigateToEditor(
+        noteId: Long?
+    ) {
+        viewModelScope.launch {
+            effectChannel.send(
+                HomeEffect.NavigateToEditor(
+                    noteId = noteId
+                )
+            )
+        }
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun observeNotes() {
+        viewModelScope.launch {
+            combine(
+                noteRepository.observeNotes(),
+
+                searchQueryFlow
+                    .debounce(300)
+
+            ) { notes, query ->
+
+                val filtered = if (query.isBlank()) {
+                    notes
+                } else {
+                    notes.filter {
+                        it.title.contains(query, ignoreCase = true) ||
+                                it.content.contains(query, ignoreCase = true)
                     }
                 }
+
+                filtered.sortedWith(
+                    compareByDescending<Note> { it.isPinned }
+                        .thenByDescending { it.updatedAt }
+                )
+
+            }.collect { filteredNotes ->
+
+                _uiState.update { current ->
+                    current.copy(
+                        notes = filteredNotes,
+                        isLoading = false,
+                        errorMessage = null
+                    )
+                }
+
+            }
         }
     }
 }

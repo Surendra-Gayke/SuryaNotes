@@ -14,6 +14,14 @@ data class HomeUiState(
 
     val isLoading: Boolean = false,
 
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+
+    val noteToDelete: Note? = null,
+
+    val searchQuery: String = "",
+
+    val selectedNote: Note? = null,
+
+    val isSearchActive: Boolean = false
 
 )
