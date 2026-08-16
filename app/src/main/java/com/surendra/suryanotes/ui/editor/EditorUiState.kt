@@ -12,6 +12,5 @@ import com.surendra.suryanotes.domain.model.Note
 data class EditorUiState(
     val noteId: Long? = null,
     val title: TextFieldValue = TextFieldValue(""),
-    val content: TextFieldValue = TextFieldValue(""),
     val isLoading: Boolean = false
 )

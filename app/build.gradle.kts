@@ -94,12 +94,13 @@ android {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 dependencies {
 
     implementation(platform(libs.compose.bom))
+    implementation(libs.androidx.compose.ui.text)
 
     androidTestImplementation(platform(libs.compose.bom))
 
@@ -144,4 +145,6 @@ dependencies {
     implementation(libs.material)
 
     implementation(libs.androidx.compose.material.icons)
+
+    implementation(libs.compose.rich.editor)
 }

@@ -1,10 +1,17 @@
 package com.surendra.suryanotes.ui.editor
 
+import android.util.Log
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mohamedrejeb.richeditor.model.RichTextState
 import com.surendra.suryanotes.domain.model.Note
 import com.surendra.suryanotes.domain.repository.NoteRepository
 import kotlinx.coroutines.FlowPreview
@@ -19,6 +26,9 @@ class EditorViewModel(
 
     private val noteId: Long? =
         savedStateHandle["noteId"]
+
+    // ✅ NEW: Rich text state
+    val richTextState = RichTextState()
 
     private val _uiState = MutableStateFlow(
         EditorUiState(
@@ -51,23 +61,29 @@ class EditorViewModel(
 
             val note = noteRepository.getNoteById(noteId)
 
+            val titleText = note?.title.orEmpty()
+            val contentHtml = note?.content.orEmpty() // ⚠️ now treated as HTML
+
+            // ✅ Load into RichTextState
+            richTextState.setHtml(contentHtml)
+
             _uiState.update {
-
-                val titleText = note?.title.orEmpty()
-                val contentText = note?.content.orEmpty()
-
                 it.copy(
                     title = TextFieldValue(
                         text = titleText,
                         selection = TextRange(titleText.length)
                     ),
-                    content = TextFieldValue(
-                        text = contentText,
-                        selection = TextRange(contentText.length)
-                    ),
                     isLoading = false
                 )
             }
+            Log.d(
+                "Editor",
+                """
+                    Loaded...
+                    title=${note?.title}
+                    html=${note?.content}
+                    """.trimIndent()
+                )
         }
     }
 
@@ -75,62 +91,114 @@ class EditorViewModel(
     // UI Actions
     // ----------------------------
     fun onTitleChange(value: TextFieldValue) {
+        Log.d("Editor", "Title changed")
         _uiState.update {
             it.copy(title = value)
         }
     }
 
-    fun onContentChange(value: TextFieldValue) {
-        _uiState.update {
-            it.copy(content = value)
-        }
+    // ❌ REMOVE onContentChange (handled by RichTextState)
+
+    // ----------------------------
+    // Formatting Actions (M2.2)
+    // ----------------------------
+
+    fun toggleBold() {
+        richTextState.toggleSpanStyle(
+            SpanStyle(fontWeight = FontWeight.Bold)
+        )
+    }
+
+    fun toggleItalic() {
+        richTextState.toggleSpanStyle(
+            SpanStyle(fontStyle = FontStyle.Italic)
+        )
+    }
+
+    fun toggleUnderline() {
+        richTextState.toggleSpanStyle(
+            SpanStyle(textDecoration = TextDecoration.Underline)
+        )
+    }
+
+    fun toggleStrike() {
+        richTextState.toggleSpanStyle(
+            SpanStyle(textDecoration = TextDecoration.LineThrough)
+        )
     }
 
     // ----------------------------
-    // AUTO SAVE (CORE LOGIC)
+    // AUTO SAVE (UPDATED)
     // ----------------------------
     private fun observeAutoSave() {
 
         viewModelScope.launch {
 
-            _uiState
+            combine(
+                // Observe title changes
+                uiState
+                    .map { it.title.text }
+                    .distinctUntilChanged(),
+
+                // Observe Rich Editor changes
+                snapshotFlow {
+                    richTextState.annotatedString
+                }
+                    .distinctUntilChanged()
+
+            ) { title, _ ->
+                title to richTextState.toHtml()
+            }
                 .debounce(500)
-                .filter { state ->
-                    !state.isLoading
-                }
-                .distinctUntilChangedBy {
-                    it.title.text to it.content.text
-                }
-                .collect { state ->
-                    saveNote(state)
+                .filter { !uiState.value.isLoading }
+                .collect { (title, html) ->
+
+                    Log.d(
+                        "Editor",
+                        """
+                    Saving...
+                    title=$title
+                    html=$html
+                    noteId=${uiState.value.noteId}
+                    """.trimIndent()
+                    )
+
+                    saveNote(
+                        title = title,
+                        contentHtml = html
+                    )
                 }
         }
     }
 
-    private suspend fun saveNote(state: EditorUiState) {
+    private suspend fun saveNote(
+        title: String,
+        contentHtml: String
+    ) {
 
-        val title = state.title.text
-        val content = state.content.text
-
-        if (title.isBlank() && content.isBlank()) {
+        if (title.isBlank() && contentHtml.isBlank()) {
             return
         }
 
         val currentTime = System.currentTimeMillis()
 
+        val currentNoteId = _uiState.value.noteId
+
         val existingNote =
-            state.noteId?.let { noteRepository.getNoteById(it) }
+            currentNoteId?.let {
+                noteRepository.getNoteById(it)
+            }
 
         val note = Note(
-            id = state.noteId ?: 0L,
+            id = currentNoteId ?: 0L,
             title = title,
-            content = content,
+            content = contentHtml, // ✅ store HTML
             createdAt = existingNote?.createdAt ?: currentTime,
             updatedAt = currentTime,
             isPinned = existingNote?.isPinned ?: false
         )
 
-        if (state.noteId == null) {
+        if (currentNoteId == null) {
 
             val newId = noteRepository.createNote(note)
 
@@ -141,5 +209,13 @@ class EditorViewModel(
         } else {
             noteRepository.updateNote(note)
         }
+        Log.d(
+            "Editor", """
+                Saving...
+                title=$title
+                html=$contentHtml
+                noteId=${_uiState.value.noteId}
+                """.trimIndent()
+            )
     }
 }

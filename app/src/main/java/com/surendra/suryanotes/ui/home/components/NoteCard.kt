@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.surendra.suryanotes.core.util.toNotePreview
 import com.surendra.suryanotes.domain.model.Note
 
 @Composable
@@ -88,7 +89,7 @@ fun NoteCard(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = note.content,
+                text = note.content.toNotePreview(),
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 3
             )
