@@ -6,24 +6,18 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,7 +34,11 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mohamedrejeb.richeditor.ui.BasicRichTextEditor
+import com.surendra.suryanotes.ui.editor.toolbar.RichTextToolbar
 import org.koin.androidx.compose.koinViewModel
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +53,7 @@ fun EditorScreen(
         configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     val scrollState = rememberScrollState()
+    val toolbarState by viewModel.toolbarState.collectAsStateWithLifecycle()
 
     val titleFocusRequester = remember { FocusRequester() }
     val contentFocusRequester = remember { FocusRequester() }
@@ -88,22 +87,50 @@ fun EditorScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        snapshotFlow {
+            viewModel.richTextState.selection
+
+        }
+            .distinctUntilChanged()
+            .collect {
+                viewModel.onSelectionChanged()
+            }
+    }
+
     val showTitle = !isLandscape || isTitleFocused || !isContentFocused
 
     Scaffold(
-        topBar = {
-            if (!isLandscape) {
-                TopAppBar(title = { Text("Note") })
+        bottomBar = {
+            AnimatedVisibility(
+                visible = isContentFocused
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .imePadding(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    RichTextToolbar(
+                        state = toolbarState,
+                        onEvent = viewModel::onToolbarEvent,
+                    )
+                }
             }
         }
+
     ) { padding ->
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 20.dp, vertical = 12.dp)
-                .imePadding()
+                .padding(
+                    start = 20.dp,
+                    end = 20.dp,
+                    top = 24.dp,
+                    bottom = 12.dp
+                )
         ) {
 
             AnimatedVisibility(
@@ -139,30 +166,6 @@ fun EditorScreen(
                         }
                     }
                 )
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-
-                IconButton(onClick = { viewModel.toggleBold() }) {
-                    Text("B")
-                }
-
-                IconButton(onClick = { viewModel.toggleItalic() }) {
-                    Text("I")
-                }
-
-                IconButton(onClick = { viewModel.toggleUnderline() }) {
-                    Text("U")
-                }
-
-                IconButton(onClick = { viewModel.toggleStrike() }) {
-                    Text("S")
-                }
             }
 
             Box(
