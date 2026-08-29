@@ -1,5 +1,7 @@
 package com.surendra.suryanotes.ui.editor.richtext
 
+import android.util.Log
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -19,7 +21,22 @@ class RichTextController(
     fun onToolbarEvent(
         event: RichTextToolbarEvent
     ) {
-        processAction(event.action)
+        when (event) {
+            is RichTextToolbarEvent.Action -> {
+                when (event.action) {
+
+                    ToolbarAction.TextColor ->
+                        showTextColorPicker()
+
+                    else ->
+                        processAction(event.action)
+
+                }
+            }
+            is RichTextToolbarEvent.ChangeTextColor -> {
+                applyTextColor(event.color)
+            }
+        }
     }
 
     fun onSelectionChanged() {
@@ -39,6 +56,11 @@ class RichTextController(
             ToolbarAction.Underline -> richTextState.toggleSpanStyle(SpanStyle(textDecoration = TextDecoration.Underline))
 
             ToolbarAction.Strike -> richTextState.toggleSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough))
+
+            ToolbarAction.TextColor -> {
+                // Next phase:
+                // Open ColorPickerSheet
+            }
         }
 
     }
@@ -54,6 +76,9 @@ class RichTextController(
     private fun refreshToolbarState() {
 
         val currentStyle = richTextState.currentSpanStyle
+
+        val currentTextColor = currentStyle.color
+            .takeUnless { it == Color.Unspecified }
 
         val activeActions = buildSet {
 
@@ -82,8 +107,32 @@ class RichTextController(
             }
         }
 
-        toolbarState.value = RichTextToolbarState(
-            activeActions = activeActions
+        toolbarState.value = toolbarState.value.copy(
+            activeActions = activeActions,
+            currentTextColor = currentTextColor
+        )
+    }
+
+    private fun applyTextColor(
+        color: Color
+    ) {
+        richTextState.addSpanStyle(
+            SpanStyle(
+                color = color
+            )
+        )
+        refreshToolbarState()
+    }
+
+    fun showTextColorPicker() {
+        toolbarState.value = toolbarState.value.copy(
+            showTextColorPicker = true
+        )
+    }
+
+    fun hideTextColorPicker() {
+        toolbarState.value = toolbarState.value.copy(
+            showTextColorPicker = false
         )
     }
 }

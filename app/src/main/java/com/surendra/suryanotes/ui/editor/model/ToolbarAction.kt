@@ -8,5 +8,7 @@ enum class ToolbarAction {
 
     Underline,
 
-    Strike
+    Strike,
+
+    TextColor
 }

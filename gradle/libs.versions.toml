@@ -31,7 +31,10 @@ material3Adaptive = "1.1.0"
 material = "1.12.0"
 
 richtext = "1.0.0"
+
 uiText = "1.11.4"
+
+colorpicker = "1.2.0"
 
 [libraries]
 
@@ -79,7 +82,10 @@ adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.re
 material = { module = "com.google.android.material:material", version.ref = "material" }
 
 compose-rich-editor = { group = "com.mohamedrejeb.richeditor", name = "richeditor-compose", version.ref = "richtext" }
+
 androidx-compose-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiText" }
+
+compose-colorpicker = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpicker" }
 
 [plugins]
 

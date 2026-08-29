@@ -147,4 +147,6 @@ dependencies {
     implementation(libs.androidx.compose.material.icons)
 
     implementation(libs.compose.rich.editor)
+
+    implementation(libs.compose.colorpicker)
 }

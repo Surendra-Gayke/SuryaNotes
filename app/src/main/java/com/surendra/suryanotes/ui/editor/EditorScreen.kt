@@ -38,6 +38,8 @@ import com.surendra.suryanotes.ui.editor.toolbar.RichTextToolbar
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
+import com.surendra.suryanotes.ui.editor.components.TextColorPickerSheet
+import com.surendra.suryanotes.ui.editor.model.RichTextToolbarEvent
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -212,6 +214,18 @@ fun EditorScreen(
                     }
                 )
             }
+        }
+        if (toolbarState.showTextColorPicker) {
+            TextColorPickerSheet(
+                onColorSelected = { color ->
+                    viewModel.onToolbarEvent(
+                        RichTextToolbarEvent.ChangeTextColor(color)
+                    )
+                },
+                onDismiss = {
+                    viewModel.hideTextColorPicker()
+                }
+            )
         }
     }
 }

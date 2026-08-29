@@ -44,6 +44,14 @@ class EditorViewModel(
         richTextController.onSelectionChanged()
     }
 
+    fun showTextColorPicker() {
+        richTextController.showTextColorPicker()
+    }
+
+    fun hideTextColorPicker() {
+        richTextController.hideTextColorPicker()
+    }
+
     private val richTextController =
         RichTextController(
             richTextState = richTextState,

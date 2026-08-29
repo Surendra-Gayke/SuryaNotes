@@ -1,6 +1,14 @@
 package com.surendra.suryanotes.ui.editor.model
 
-data class RichTextToolbarEvent(
+import androidx.compose.ui.graphics.Color
 
-    val action: ToolbarAction
-)
+sealed interface RichTextToolbarEvent {
+
+    data class Action(
+        val action: ToolbarAction
+    ) : RichTextToolbarEvent
+
+    data class ChangeTextColor(
+        val color: Color
+    ) : RichTextToolbarEvent
+}

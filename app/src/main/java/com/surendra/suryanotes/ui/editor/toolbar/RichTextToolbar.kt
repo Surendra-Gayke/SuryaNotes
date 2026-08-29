@@ -13,6 +13,7 @@ import androidx.compose.material.icons.rounded.FormatBold
 import androidx.compose.material.icons.rounded.FormatItalic
 import androidx.compose.material.icons.rounded.FormatUnderlined
 import androidx.compose.material.icons.rounded.StrikethroughS
+import androidx.compose.material.icons.rounded.FormatColorText
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -78,6 +79,15 @@ fun RichTextToolbar(
                 selected = ToolbarAction.Strike in state.activeActions,
                 contentDescription = "Strikethrough",
                 action = ToolbarAction.Strike,
+                onEvent = onEvent
+            )
+
+            ToolbarButton(
+                icon = Icons.Rounded.FormatColorText,
+                selected = false,
+                currentTextColor = state.currentTextColor,
+                contentDescription = "Text Color",
+                action = ToolbarAction.TextColor,
                 onEvent = onEvent
             )
         }
