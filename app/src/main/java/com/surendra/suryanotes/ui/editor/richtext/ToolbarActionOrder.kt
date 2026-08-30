@@ -18,6 +18,8 @@ internal object ToolbarActionOrder {
 
         ToolbarAction.Heading,
 
+        ToolbarAction.Code,
+
         ToolbarAction.BulletList,
 
         ToolbarAction.NumberedList

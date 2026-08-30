@@ -43,6 +43,8 @@ fun ToolbarButton(
 
     selected: Boolean,
 
+    enabled: Boolean = true,
+
     text: String? = null,
 
     contentDescription: String,
@@ -84,6 +86,7 @@ fun ToolbarButton(
                 .clickable(
                     interactionSource = interactionSource,
                     indication = ripple(),
+                    enabled = enabled,
                     onClick = {
                         onEvent(
                             RichTextToolbarEvent.Action(action)
@@ -106,11 +109,19 @@ fun ToolbarButton(
                     Icon(
                         imageVector = icon,
                         contentDescription = contentDescription,
-                        tint =
-                            if (action == ToolbarAction.TextColor)
+                        tint = when {
+                            !enabled ->
+                                MaterialTheme.colorScheme.outline
+
+                            action == ToolbarAction.TextColor ->
                                 currentTextColor ?: LocalContentColor.current
-                            else
+
+                            selected ->
+                                MaterialTheme.colorScheme.primary
+
+                            else ->
                                 LocalContentColor.current
+                        }
                     )
                 }
                 painter != null -> {

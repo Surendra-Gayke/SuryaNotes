@@ -59,6 +59,10 @@ class RichTextController(
 
         when (action) {
 
+            ToolbarAction.Undo -> { richTextState.history.undo() }
+
+            ToolbarAction.Redo -> { richTextState.history.redo() }
+
             ToolbarAction.Bold -> richTextState.toggleSpanStyle(SpanStyle(fontWeight = FontWeight.Bold))
 
             ToolbarAction.Italic -> richTextState.toggleSpanStyle(SpanStyle(fontStyle = FontStyle.Italic))
@@ -70,6 +74,8 @@ class RichTextController(
             ToolbarAction.TextColor -> Unit
 
             ToolbarAction.Heading -> Unit
+
+            ToolbarAction.Code -> { richTextState.toggleCodeSpan() }
 
             ToolbarAction.BulletList -> {
                 richTextState.toggleUnorderedList()
@@ -130,6 +136,10 @@ class RichTextController(
                 add(ToolbarAction.Heading)
             }
 
+            if (richTextState.isCodeSpan) {
+                add(ToolbarAction.Code)
+            }
+
             if (richTextState.isUnorderedList) {
                 add(ToolbarAction.BulletList)
             }
@@ -142,11 +152,9 @@ class RichTextController(
         toolbarState.value = toolbarState.value.copy(
             activeActions = activeActions,
             currentTextColor = currentTextColor,
-            currentHeading = currentHeading
-        )
-        Log.d(
-            "RichText",
-            "First selected = ${toolbarState.value.firstSelectedAction}"
+            currentHeading = currentHeading,
+            canUndo = richTextState.history.canUndo,
+            canRedo = richTextState.history.canRedo
         )
     }
 

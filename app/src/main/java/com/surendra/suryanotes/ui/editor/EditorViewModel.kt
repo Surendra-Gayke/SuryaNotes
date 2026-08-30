@@ -2,6 +2,7 @@ package com.surendra.suryanotes.ui.editor
 
 import android.util.Log
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
@@ -33,7 +34,12 @@ class EditorViewModel(
     private val noteId: Long? =
         savedStateHandle["noteId"]
 
-    val richTextState = RichTextState()
+    val richTextState = RichTextState().apply {
+        config.codeSpanColor = Color(0xFF1C1B1F)
+        config.codeSpanBackgroundColor = Color(0xFFF3EDF7)
+        config.codeSpanStrokeColor = Color(0xFFF3EDF7)
+    }
+    val undo = richTextState.history
     private val _toolbarState =
         MutableStateFlow(RichTextToolbarState())
 
@@ -103,14 +109,6 @@ class EditorViewModel(
                     isLoading = false
                 )
             }
-            Log.d(
-                "Editor",
-                """
-                    Loaded...
-                    title=${note?.title}
-                    html=${note?.content}
-                    """.trimIndent()
-                )
         }
     }
     fun onTitleChange(value: TextFieldValue) {

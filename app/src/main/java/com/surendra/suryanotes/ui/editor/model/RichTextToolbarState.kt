@@ -8,7 +8,9 @@ data class RichTextToolbarState(
     val currentTextColor: Color? = null,
     val currentHeading: EditorHeading = EditorHeading.Normal,
     val showTextColorPicker: Boolean = false,
-    val showHeadingPicker: Boolean = false
+    val showHeadingPicker: Boolean = false,
+    val canUndo: Boolean = false,
+    val canRedo: Boolean = false
 ) {
     val firstSelectedAction: ToolbarAction?
         get() = ToolbarActionOrder.firstSelected(activeActions)

@@ -4,12 +4,16 @@ import android.util.Log
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.FormatListBulleted
+import androidx.compose.material.icons.automirrored.rounded.Redo
+import androidx.compose.material.icons.automirrored.rounded.Undo
+import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.FormatBold
 import androidx.compose.material.icons.rounded.FormatColorText
 import androidx.compose.material.icons.rounded.FormatItalic
@@ -17,6 +21,7 @@ import androidx.compose.material.icons.rounded.FormatListNumbered
 import androidx.compose.material.icons.rounded.FormatUnderlined
 import androidx.compose.material.icons.rounded.StrikethroughS
 import androidx.compose.material3.Surface
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
@@ -87,6 +92,32 @@ fun RichTextToolbar(
         ) {
 
             ToolbarButton(
+                icon = Icons.AutoMirrored.Rounded.Undo,
+                selected = false,
+                enabled = state.canUndo,
+                contentDescription = "Undo",
+                action = ToolbarAction.Undo,
+                onEvent = onEvent,
+                onPositionChanged = null
+            )
+
+            ToolbarButton(
+                icon = Icons.AutoMirrored.Rounded.Redo,
+                selected = false,
+                enabled = state.canRedo,
+                contentDescription = "Redo",
+                action = ToolbarAction.Redo,
+                onEvent = onEvent,
+                onPositionChanged = null
+            )
+
+            VerticalDivider(
+                modifier = Modifier
+                    .height(24.dp)
+                    .padding(horizontal = 4.dp)
+            )
+
+            ToolbarButton(
                 icon = Icons.Rounded.FormatBold,
                 selected = ToolbarAction.Bold in state.activeActions,
                 contentDescription = "Bold",
@@ -137,6 +168,15 @@ fun RichTextToolbar(
                 selected = state.currentHeading != EditorHeading.Normal,
                 contentDescription = "Heading",
                 action = ToolbarAction.Heading,
+                onEvent = onEvent,
+                onPositionChanged = onToolbarPositionChanged
+            )
+
+            ToolbarButton(
+                icon = Icons.Rounded.Code,
+                selected = ToolbarAction.Code in state.activeActions,
+                contentDescription = "Inline Code",
+                action = ToolbarAction.Code,
                 onEvent = onEvent,
                 onPositionChanged = onToolbarPositionChanged
             )
