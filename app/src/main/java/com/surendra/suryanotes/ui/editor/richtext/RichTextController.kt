@@ -33,8 +33,10 @@ class RichTextController(
                         showHeadingPicker()
                     }
 
-                    else ->
-                        processAction(event.action)
+                    else -> {
+                        applyToolbarAction(event.action)
+                        refreshToolbarState()
+                    }
                 }
             }
             is RichTextToolbarEvent.ChangeTextColor -> {
@@ -51,7 +53,7 @@ class RichTextController(
         refreshToolbarState()
     }
 
-    private fun updateEditor(
+    private fun applyToolbarAction(
         action: ToolbarAction
     ) {
 
@@ -65,25 +67,20 @@ class RichTextController(
 
             ToolbarAction.Strike -> richTextState.toggleSpanStyle(SpanStyle(textDecoration = TextDecoration.LineThrough))
 
-            ToolbarAction.TextColor -> {
-                // Next phase:
-                // Open ColorPickerSheet
+            ToolbarAction.TextColor -> Unit
+
+            ToolbarAction.Heading -> Unit
+
+            ToolbarAction.BulletList -> {
+                richTextState.toggleUnorderedList()
             }
 
-            ToolbarAction.Heading -> {
-
+            ToolbarAction.NumberedList -> {
+                richTextState.toggleOrderedList()
             }
         }
 
     }
-
-    private fun processAction(
-        action: ToolbarAction
-    ) {
-        updateEditor(action)
-        refreshToolbarState()
-    }
-
 
     private fun refreshToolbarState() {
 
@@ -96,6 +93,8 @@ class RichTextController(
             HeadingStyleMapper.toEditorHeading(
                 currentStyle
             )
+
+
 
         val activeActions = buildSet {
 
@@ -122,12 +121,32 @@ class RichTextController(
             ) {
                 add(ToolbarAction.Strike)
             }
+
+            if (currentTextColor != null) {
+                add(ToolbarAction.TextColor)
+            }
+
+            if (currentHeading != EditorHeading.Normal) {
+                add(ToolbarAction.Heading)
+            }
+
+            if (richTextState.isUnorderedList) {
+                add(ToolbarAction.BulletList)
+            }
+
+            if (richTextState.isOrderedList) {
+                add(ToolbarAction.NumberedList)
+            }
         }
 
         toolbarState.value = toolbarState.value.copy(
             activeActions = activeActions,
             currentTextColor = currentTextColor,
             currentHeading = currentHeading
+        )
+        Log.d(
+            "RichText",
+            "First selected = ${toolbarState.value.firstSelectedAction}"
         )
     }
 

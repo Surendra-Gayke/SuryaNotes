@@ -12,5 +12,9 @@ enum class ToolbarAction {
 
     TextColor,
 
-    Heading
+    Heading,
+
+    BulletList,
+
+    NumberedList
 }

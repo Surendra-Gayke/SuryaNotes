@@ -27,6 +27,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.surendra.suryanotes.ui.editor.model.EditorHeading
@@ -49,7 +51,9 @@ fun ToolbarButton(
 
     currentTextColor: Color? = null,
 
-    onEvent: (RichTextToolbarEvent) -> Unit
+    onEvent: (RichTextToolbarEvent) -> Unit,
+
+    onPositionChanged: ((ToolbarAction, Int) -> Unit)? = null
 ) {
 
     val interactionSource = remember {
@@ -64,7 +68,14 @@ fun ToolbarButton(
             else
                 MaterialTheme.colorScheme.surface,
 
-        modifier = Modifier.size(36.dp)
+        modifier = Modifier
+            .size(36.dp)
+            .onGloballyPositioned { coordinates ->
+                onPositionChanged?.invoke(
+                    action,
+                    coordinates.positionInParent().x.toInt()
+                )
+            }
 
     ) {
         Box(
