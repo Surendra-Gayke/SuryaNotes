@@ -11,4 +11,8 @@ sealed interface RichTextToolbarEvent {
     data class ChangeTextColor(
         val color: Color
     ) : RichTextToolbarEvent
+
+    data class ChangeHeading(
+        val heading: EditorHeading
+    ) : RichTextToolbarEvent
 }

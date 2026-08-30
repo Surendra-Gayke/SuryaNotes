@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -24,16 +25,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.surendra.suryanotes.ui.editor.model.EditorHeading
 import com.surendra.suryanotes.ui.editor.model.RichTextToolbarEvent
 import com.surendra.suryanotes.ui.editor.model.ToolbarAction
 @Composable
 fun ToolbarButton(
 
-    icon: ImageVector,
+    icon: ImageVector? = null,
+
+    painter: Painter? = null,
 
     selected: Boolean,
+
+    text: String? = null,
 
     contentDescription: String,
 
@@ -75,19 +83,32 @@ fun ToolbarButton(
             contentAlignment = Alignment.Center
 
         ) {
-
-            Icon(
-
-                imageVector = icon,
-
-                contentDescription = contentDescription,
-
-                tint =
-                    if (action == ToolbarAction.TextColor)
-                        currentTextColor ?: LocalContentColor.current
-                    else
-                        LocalContentColor.current
-            )
+            when {
+                text != null -> {
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                icon != null -> {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = contentDescription,
+                        tint =
+                            if (action == ToolbarAction.TextColor)
+                                currentTextColor ?: LocalContentColor.current
+                            else
+                                LocalContentColor.current
+                    )
+                }
+                painter != null -> {
+                    Icon(
+                        painter = painter,
+                        contentDescription = contentDescription
+                    )
+                }
+            }
         }
     }
 }

@@ -52,6 +52,10 @@ class EditorViewModel(
         richTextController.hideTextColorPicker()
     }
 
+    fun hideHeadingPicker() {
+        richTextController.hideHeadingPicker()
+    }
+
     private val richTextController =
         RichTextController(
             richTextState = richTextState,

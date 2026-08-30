@@ -10,5 +10,7 @@ enum class ToolbarAction {
 
     Strike,
 
-    TextColor
+    TextColor,
+
+    Heading
 }

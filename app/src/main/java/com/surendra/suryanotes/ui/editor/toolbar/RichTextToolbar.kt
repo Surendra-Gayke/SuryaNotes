@@ -3,22 +3,22 @@ package com.surendra.suryanotes.ui.editor.toolbar
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FormatBold
+import androidx.compose.material.icons.rounded.FormatColorText
 import androidx.compose.material.icons.rounded.FormatItalic
 import androidx.compose.material.icons.rounded.FormatUnderlined
 import androidx.compose.material.icons.rounded.StrikethroughS
-import androidx.compose.material.icons.rounded.FormatColorText
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.surendra.suryanotes.ui.editor.model.EditorHeading
 import com.surendra.suryanotes.ui.editor.model.RichTextToolbarEvent
 import com.surendra.suryanotes.ui.editor.model.RichTextToolbarState
 import com.surendra.suryanotes.ui.editor.model.ToolbarAction
@@ -90,6 +90,31 @@ fun RichTextToolbar(
                 action = ToolbarAction.TextColor,
                 onEvent = onEvent
             )
+
+            ToolbarButton(
+                text = state.currentHeading.shortLabel(),
+                selected = state.currentHeading != EditorHeading.Normal,
+                contentDescription = "Heading",
+                action = ToolbarAction.Heading,
+                onEvent = onEvent
+            )
         }
     }
 }
+private fun EditorHeading.shortLabel(): String =
+    when (this) {
+
+        EditorHeading.Normal -> "H"
+
+        EditorHeading.H1 -> "H1"
+
+        EditorHeading.H2 -> "H2"
+
+        EditorHeading.H3 -> "H3"
+
+        EditorHeading.H4 -> "H4"
+
+        EditorHeading.H5 -> "H5"
+
+        EditorHeading.H6 -> "H6"
+    }

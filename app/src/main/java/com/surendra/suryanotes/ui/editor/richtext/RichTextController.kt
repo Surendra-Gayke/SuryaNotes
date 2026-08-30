@@ -7,6 +7,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import com.mohamedrejeb.richeditor.model.RichTextState
+import com.surendra.suryanotes.ui.editor.model.EditorHeading
+import com.surendra.suryanotes.ui.editor.model.HeadingStyleMapper
 import com.surendra.suryanotes.ui.editor.model.RichTextToolbarEvent
 import com.surendra.suryanotes.ui.editor.model.ToolbarAction
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,17 +26,23 @@ class RichTextController(
         when (event) {
             is RichTextToolbarEvent.Action -> {
                 when (event.action) {
-
                     ToolbarAction.TextColor ->
                         showTextColorPicker()
 
+                    ToolbarAction.Heading -> {
+                        showHeadingPicker()
+                    }
+
                     else ->
                         processAction(event.action)
-
                 }
             }
             is RichTextToolbarEvent.ChangeTextColor -> {
                 applyTextColor(event.color)
+            }
+
+            is RichTextToolbarEvent.ChangeHeading ->{
+                applyHeading(event.heading)
             }
         }
     }
@@ -61,6 +69,10 @@ class RichTextController(
                 // Next phase:
                 // Open ColorPickerSheet
             }
+
+            ToolbarAction.Heading -> {
+
+            }
         }
 
     }
@@ -79,6 +91,11 @@ class RichTextController(
 
         val currentTextColor = currentStyle.color
             .takeUnless { it == Color.Unspecified }
+
+        val currentHeading =
+            HeadingStyleMapper.toEditorHeading(
+                currentStyle
+            )
 
         val activeActions = buildSet {
 
@@ -109,7 +126,8 @@ class RichTextController(
 
         toolbarState.value = toolbarState.value.copy(
             activeActions = activeActions,
-            currentTextColor = currentTextColor
+            currentTextColor = currentTextColor,
+            currentHeading = currentHeading
         )
     }
 
@@ -124,6 +142,27 @@ class RichTextController(
         refreshToolbarState()
     }
 
+    private fun applyHeading(
+        heading: EditorHeading
+    ) {
+        EditorHeading.entries
+            .filter { it != EditorHeading.Normal }
+            .forEach {
+                richTextState.removeSpanStyle(
+                    HeadingStyleMapper.toSpanStyle(it)
+                )
+            }
+
+        if (heading != EditorHeading.Normal) {
+            richTextState.toggleSpanStyle(
+                HeadingStyleMapper.toSpanStyle(heading)
+            )
+        }
+        hideHeadingPicker()
+
+        refreshToolbarState()
+    }
+
     fun showTextColorPicker() {
         toolbarState.value = toolbarState.value.copy(
             showTextColorPicker = true
@@ -133,6 +172,18 @@ class RichTextController(
     fun hideTextColorPicker() {
         toolbarState.value = toolbarState.value.copy(
             showTextColorPicker = false
+        )
+    }
+
+    fun showHeadingPicker() {
+        toolbarState.value = toolbarState.value.copy(
+            showHeadingPicker = true
+        )
+    }
+
+    fun hideHeadingPicker() {
+        toolbarState.value = toolbarState.value.copy(
+            showHeadingPicker = false
         )
     }
 }

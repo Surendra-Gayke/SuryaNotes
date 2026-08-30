@@ -38,6 +38,7 @@ import com.surendra.suryanotes.ui.editor.toolbar.RichTextToolbar
 import org.koin.androidx.compose.koinViewModel
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
+import com.surendra.suryanotes.ui.editor.components.HeadingPickerSheet
 import com.surendra.suryanotes.ui.editor.components.TextColorPickerSheet
 import com.surendra.suryanotes.ui.editor.model.RichTextToolbarEvent
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -224,6 +225,20 @@ fun EditorScreen(
                 },
                 onDismiss = {
                     viewModel.hideTextColorPicker()
+                }
+            )
+        }
+
+        if (toolbarState.showHeadingPicker) {
+            HeadingPickerSheet(
+                currentHeading = toolbarState.currentHeading,
+                onHeadingSelected = { heading ->
+                    viewModel.onToolbarEvent(
+                        RichTextToolbarEvent.ChangeHeading(heading)
+                    )
+                },
+                onDismiss = {
+                    viewModel.hideHeadingPicker()
                 }
             )
         }
