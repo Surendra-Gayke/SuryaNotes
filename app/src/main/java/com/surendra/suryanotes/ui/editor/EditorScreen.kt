@@ -1,11 +1,16 @@
 package com.surendra.suryanotes.ui.editor
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.content.MediaType
+import androidx.compose.foundation.content.hasMediaType
+import androidx.compose.foundation.content.contentReceiver
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,7 +48,7 @@ import com.surendra.suryanotes.ui.editor.components.TextColorPickerSheet
 import com.surendra.suryanotes.ui.editor.model.RichTextToolbarEvent
 import kotlinx.coroutines.flow.distinctUntilChanged
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun EditorScreen(
     viewModel: EditorViewModel = koinViewModel()
@@ -181,6 +186,48 @@ fun EditorScreen(
 
                     modifier = Modifier
                         .fillMaxSize()
+                        .contentReceiver { transferableContent ->
+
+                            if (!transferableContent.hasMediaType(MediaType.HtmlText)) {
+                                return@contentReceiver transferableContent
+                            }
+
+                            val clipData = transferableContent.clipEntry.clipData
+                            if (clipData.itemCount == 0) {
+                                return@contentReceiver transferableContent
+                            }
+
+                            val rawHtml = clipData.getItemAt(0).htmlText
+                            if (rawHtml.isNullOrBlank()) {
+                                return@contentReceiver transferableContent
+                            }
+
+                            val state = viewModel.richTextState
+
+                            runCatching {
+
+                                if (!state.selection.collapsed) {
+                                    state.removeSelectedText()
+                                }
+
+                                state.insertHtml(
+                                    html = rawHtml,
+                                    position = state.selection.min
+                                )
+
+                            }.onSuccess {
+                                return@contentReceiver null
+
+                            }.onFailure { error ->
+                                Log.e(
+                                    "RichText",
+                                    "Failed to import HTML clipboard. Falling back to plain text paste.",
+                                    error
+                                )
+                            }
+
+                            transferableContent
+                        }
                         .focusRequester(contentFocusRequester)
                         .onFocusChanged {
                             isContentFocused = it.isFocused

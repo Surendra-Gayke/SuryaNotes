@@ -39,7 +39,6 @@ class EditorViewModel(
         config.codeSpanBackgroundColor = Color(0xFFF3EDF7)
         config.codeSpanStrokeColor = Color(0xFFF3EDF7)
     }
-    val undo = richTextState.history
     private val _toolbarState =
         MutableStateFlow(RichTextToolbarState())
 
@@ -92,7 +91,6 @@ class EditorViewModel(
         }
 
         viewModelScope.launch {
-
             val note = noteRepository.getNoteById(noteId)
 
             val titleText = note?.title.orEmpty()
@@ -179,7 +177,7 @@ class EditorViewModel(
         val note = Note(
             id = currentNoteId ?: 0L,
             title = title,
-            content = contentHtml, // ✅ store HTML
+            content = contentHtml,
             createdAt = existingNote?.createdAt ?: currentTime,
             updatedAt = currentTime,
             isPinned = existingNote?.isPinned ?: false
